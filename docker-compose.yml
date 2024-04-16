@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  nginx:
+    build: ./nginx.Dockerfile
+    expose:
+      - 4000
+    volumes:
+      - ./website/static/:/app/static
+    restart: unless-stopped
+      - net_external
+    depends_on:
+      - webserver
+  webserver:
+    build: ./
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+      - net_isolated
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./website/static/:/app/static
+  tor:
+    build: ./tor.Dockerfile
+    restart: unless-stopped
+    expose:
+      - 9051
+    networks:
+      - net_isolated
+      - net_control
+      - net_external
+    volumes:
+      - torrc:/etc/tor/
+      - authcookie:/var/lib/tor/
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - nginx
+
+volumes:
+  torrc: {}
+  authcookie: {}
+
+networks:
+  net_isolated:
+    internal: true
+  net_control:
+    internal: true
+  net_external:
