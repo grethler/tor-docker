@@ -2,7 +2,7 @@ Based on [this](https://devedge.github.io/2021-02-05/deploying-a-website-to-tor-
 
 # Get custom onion address
 Download the newest release from: [mkp224o](https://github.com/cathugger/mkp224o/releases)
-Note: if the name is > 6 characters, the address will take longer to generate.
+Note: if the name is > 6 characters, the address will take very long to generate.
 with adding `-t X` you can set the number of threads to use.
 ```bash
  ./mkp224o -S 30 -j 8 -o onion3.txt -d onionv3/ {NAME YOU WANT}
