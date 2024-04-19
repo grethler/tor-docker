@@ -2,26 +2,35 @@ version: '3'
 
 services:
   nginx:
-    build: ./nginx.Dockerfile
+    image: nginx:1-alpine
     expose:
       - 4000
     volumes:
       - ./website/static/:/app/static
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
     restart: unless-stopped
+    networks:
       - net_external
+      - net_isolated
     depends_on:
       - webserver
   webserver:
-    build: ./
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn website.wsgi:application --bind 0.0.0.0:8000
     ports:
       - 8000:8000
     restart: unless-stopped
+    networks:
       - net_isolated
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./website/static/:/app/static
+      #- /etc/localtime:/etc/localtime:ro
+      - ./website/:/app/
   tor:
-    build: ./tor.Dockerfile
+    build:
+      context: ./
+      dockerfile: tor.Dockerfile
     restart: unless-stopped
     expose:
       - 9051
@@ -32,9 +41,7 @@ services:
     volumes:
       - torrc:/etc/tor/
       - authcookie:/var/lib/tor/
-      - /etc/localtime:/etc/localtime:ro
-    depends_on:
-      - nginx
+      #- /etc/localtime:/etc/localtime:ro
 
 volumes:
   torrc: {}

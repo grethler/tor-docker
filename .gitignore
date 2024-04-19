@@ -1,0 +1,4 @@
+.venv/
+.vscode/
+onionv3/**/*
+__pycache__/
